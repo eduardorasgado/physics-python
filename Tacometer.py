@@ -1,8 +1,40 @@
 # -*- coding: utf-8 -*-
 """
-Spyder Editor
-
-This is a temporary script file.
+@author Eduardo Rasgado Ruiz
+Funcionamiento en fase experimental
+Requerimientos y prework:
+    Anaconda continuum(paquete científico de python)
+    
+    De preferencia crear un ambiente virtual con anaconda
+    - conda create tacometro-env
+    Activar el ambiente:
+    - conda activate tacomentro-env
+    Instalar todas las dependencias que necesita, principalmente la librería
+    PYGAME:
+    - conda install -c cogsci pygame
+    
+    Modifique el programa para seleccionar su pocision de puntero de tacometro
+    deseada.
+    Ahora ya puede correr el programa con:
+    - python Tacometer.py
+    
+Funcionamiento en fase experimental:
+    Se inicia con una medida del tacometro deseada, y al correr el script
+    comienza la animacion, el tacometro recorre el puntero desde el punto
+    ya especificado hasta 60, la máxima medición.
+    
+    Ejemplo de como correrlo:
+        size = (400, 400)
+        converter = ConversionOperations()
+        m = Meter(size, converter)
+        m.set_tacometer_measure(30)
+        m.selectType(1)
+        m.createMeterWindow()
+        m.initLoop()
+    
+    en donde en m.set_tacometer_measure(30), 30 representa la medida
+    del tacometro desde donde se comienza el movimiento del tacometro
+    Verá una animación de esto en seguida
 """
 import math
 import pygame
