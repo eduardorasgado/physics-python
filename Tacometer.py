@@ -10,6 +10,8 @@ import pygame
 class Meter:
     def __init__(self, size, converter):
         print("Un medidor ha sido creado")
+        self.tacometer_measure = 0
+        self.deg = 0
         self.type = 0
         self.size = size
         self.screen = None
@@ -35,13 +37,17 @@ class Meter:
         pygame.init()
         self.screen = pygame.display.set_mode(self.size)
         pygame.display.set_caption("Medidor")
+        
+    def set_tacometer_measure(self, tm):
+        self.tacometer_measure = tm
     
     def initLoop(self):
         #self.background = pygame.Surface(self.size)
         #self.background.fill((255,0,255))
         self.clock = pygame.time.Clock()
         
-        deg = 0
+        self.map_tacometer_measure_to_degree()
+        
         #clock = pygame.time.Clock()
         while self.going:
             
@@ -53,12 +59,12 @@ class Meter:
             
             # el angulo de rotacion que va a dar la aguja respecto de cero en el eje x
             # este angulo debe de estar en radianes -> ejemplo: pi / 2
-            angle = self.converter.deg_to_rad(deg)
+            angle = self.converter.deg_to_rad(self.map_tacometer_degree())
             
             self.draw_arc_semicircle()
             self.draw_center()
             self.draw_pointer(angle)
-            deg+=1
+            self.deg+=1
             # mostrando la imagen o actualizando
             pygame.display.flip()
             self.clock.tick(60)
@@ -132,6 +138,18 @@ class Meter:
         xf = center - x
         yf = center + y
         return xf, yf
+    
+    def map_tacometer_degree(self):
+        # si es cero, este tiene que convertirse a 240 grados
+        converted_deg = 240 - self.deg
+        if self.deg >= 300:
+            # el tope del tacometro, la parte final roja, esto es 360 - 60
+            return -60
+        return converted_deg
+    
+    def map_tacometer_measure_to_degree(self):
+        # el tacometro va de cero a 60, los grados permisibles van de 0 - 300
+        self.deg = self.tacometer_measure
 
 
 class ConversionOperations:
@@ -150,6 +168,7 @@ if __name__=="__main__":
     size = (400, 400)
     converter = ConversionOperations()
     m = Meter(size, converter)
+    m.set_tacometer_measure(30)
     m.selectType(1)
     m.createMeterWindow()
     m.initLoop()
