@@ -131,6 +131,8 @@ class Meter:
         return xf, yf
     
     def calculate_base(self, angle):
+        # calculo del punto donde se localizan los dos vertices
+        # que forman la base del puntero o pointer
         center = self.size[0] / 2
         L = -10
         x = math.cos(angle) * L
@@ -149,7 +151,7 @@ class Meter:
     
     def map_tacometer_measure_to_degree(self):
         # el tacometro va de cero a 60, los grados permisibles van de 0 - 300
-        self.deg = self.tacometer_measure
+        self.deg = (self.tacometer_measure * 300) / 60
 
 
 class ConversionOperations:
