@@ -26,6 +26,7 @@ class Meter:
         # izquierda, arriba, ancho, alto
         self.arc_rectangle = [0, 0,400,400]
         self.arc_thickness = 10
+        self.ninety_deg = self.converter.deg_to_rad(90)
     
     def selectType(self, type):
         self.type = type
@@ -39,22 +40,25 @@ class Meter:
         #self.background = pygame.Surface(self.size)
         #self.background.fill((255,0,255))
         self.clock = pygame.time.Clock()
-        # el angulo de rotacion que va a dar la aguja respecto de cero en el eje x
-        # este angulo debe de estar en radianes -> ejemplo: pi / 2
-        angle = self.converter.deg_to_rad(20)
         
+        deg = 0
         #clock = pygame.time.Clock()
         while self.going:
+            
             # lectura del teclado para cerrar la ventana
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.going = False
             self.screen.fill(self.BACKG_COLOR)
             
+            # el angulo de rotacion que va a dar la aguja respecto de cero en el eje x
+            # este angulo debe de estar en radianes -> ejemplo: pi / 2
+            angle = self.converter.deg_to_rad(deg)
+            
             self.draw_arc_semicircle()
             self.draw_center()
             self.draw_pointer(angle)
-            
+            deg+=1
             # mostrando la imagen o actualizando
             pygame.display.flip()
             self.clock.tick(60)
@@ -62,7 +66,7 @@ class Meter:
         pygame.display.quit()
         
     def draw_arc_semicircle(self):
-        print("oh shit here we go again")
+        #print("oh shit here we go again")
         start_rad = self.converter.deg_to_rad(240)
         stop_green_rad = self.converter.deg_to_rad(45)
         yellow_red_middle_rad = self.converter.inverted_deg_to_rad(10)
@@ -83,13 +87,28 @@ class Meter:
         pygame.draw.circle(self.screen, self.BLACK, [200,200], 8, 0)
         
     def draw_pointer(self, angle):
+        
+        
+        measure_x, measure_y = self.calculate_peak(angle)
+        
+        peak = (measure_x, measure_y)
+        
+        # bases respecto el angulo del pico del pointer
+        base_i_angle = angle + self.ninety_deg
+        base_d_angle = angle - self.ninety_deg
+        
+        #print("base i: {}, base d: {}".format(base_i_angle, base_d_angle))
+        
         # i, d = punto central
-        base_i = (200, 190)
-        base_d = (200, 210)
+        base_i_x, base_i_y = self.calculate_base(base_i_angle)
+        base_d_x, base_d_y = self.calculate_base(base_d_angle)
+        print("base i_x: {}, base i_y: {}".format(base_i_x, base_i_y))
+        print("base d_x: {}, base d_y: {}".format(base_d_x, base_d_y))
         
-        measure_angle_x, measure_angle_y = self.calculate_peak(angle)
-        
-        peak = (measure_angle_x, measure_angle_y)
+        base_i = (base_i_x, base_i_y)
+        base_d = (base_d_x, base_d_y)
+        #base_i = (200, 190)
+        #base_d = (200, 210)
         
         # usando un poligono de 3 nodos
         pygame.draw.polygon(self.screen, self.WHITE, [base_i, base_d, peak], 0)
@@ -103,6 +122,15 @@ class Meter:
         y = math.sin(angle) * L
         xf = L + x
         yf = L - y
+        return xf, yf
+    
+    def calculate_base(self, angle):
+        center = self.size[0] / 2
+        L = -10
+        x = math.cos(angle) * L
+        y = math.sin(angle) * L
+        xf = center - x
+        yf = center + y
         return xf, yf
 
 
