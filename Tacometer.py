@@ -39,12 +39,9 @@ class Meter:
         #self.background = pygame.Surface(self.size)
         #self.background.fill((255,0,255))
         self.clock = pygame.time.Clock()
-        base_i = (200, 190)
-        base_d = (200, 210)
-        measure_angle_x = 0
-        measure_angle_y = 200
-        # i, d = punto central
-        peak = (measure_angle_x, measure_angle_y)
+        # el angulo de rotacion que va a dar la aguja respecto de cero en el eje x
+        # este angulo debe de estar en radianes -> ejemplo: pi / 2
+        angle = self.converter.deg_to_rad(20)
         
         #clock = pygame.time.Clock()
         while self.going:
@@ -56,7 +53,7 @@ class Meter:
             
             self.draw_arc_semicircle()
             self.draw_center()
-            self.draw_pointer(base_i, base_d, peak)
+            self.draw_pointer(angle)
             
             # mostrando la imagen o actualizando
             pygame.display.flip()
@@ -85,9 +82,28 @@ class Meter:
         #pygame.draw.circle(self.screen, self.BLACK, [(100+(255-100)/2), 50+((255-50)/2)], 4, 0)
         pygame.draw.circle(self.screen, self.BLACK, [200,200], 8, 0)
         
-    def draw_pointer(self, base_i, base_d, peak):
+    def draw_pointer(self, angle):
+        # i, d = punto central
+        base_i = (200, 190)
+        base_d = (200, 210)
+        
+        measure_angle_x, measure_angle_y = self.calculate_peak(angle)
+        
+        peak = (measure_angle_x, measure_angle_y)
+        
         # usando un poligono de 3 nodos
         pygame.draw.polygon(self.screen, self.WHITE, [base_i, base_d, peak], 0)
+        
+    def calculate_peak(self, angle):
+        # el angulo debe de llegar en radianes
+        #xf = 400
+        #xy = 200
+        L = self.size[0] / 2
+        x = math.cos(angle) * L
+        y = math.sin(angle) * L
+        xf = L + x
+        yf = L - y
+        return xf, yf
 
 
 class ConversionOperations:
